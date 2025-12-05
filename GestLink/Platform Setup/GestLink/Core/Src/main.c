@@ -65,7 +65,11 @@ static void MX_ETH_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+int _write(int file, char *ptr, int len) {
+    // Make sure 'huart3' is the handle found in your main.c (standard for Nucleo-F207ZG)
+    HAL_UART_Transmit(&huart3, (uint8_t *)ptr, len, 10);
+    return len;
+}
 /* USER CODE END 0 */
 
 /**
@@ -102,18 +106,55 @@ int main(void)
   MX_I2C1_Init();
   MX_ETH_Init();
   /* USER CODE BEGIN 2 */
-
+  // Initialize the sensor
+    if (PAJ7660_Init(&hi2c1)) {
+        printf("PAJ7660 Init Success!\r\n");
+        // Blink Blue LED 3 times
+        for(int i=0; i<3; i++) {
+            HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, GPIO_PIN_SET);
+            HAL_Delay(100);
+            HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, GPIO_PIN_RESET);
+            HAL_Delay(100);
+        }
+    } else {
+        printf("PAJ7660 Init Failed.\r\n");
+        // Turn LED on permanently to indicate error
+        HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, GPIO_PIN_SET);
+        while(1);
+    }
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	 HAL_UART_Transmit(&huart3, (uint8_t*)tx_buffer, sizeof(tx_buffer) - 1, HAL_MAX_DELAY);
-	  HAL_Delay(1000);
-	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_7);
+	  // Poll for new data
+	  	      uint8_t gesture = PAJ7660_PollGesture();
 
+	  	      if (gesture != GESTURE_NONE) {
+	  	          printf("Gesture Code: %d\r\n", gesture);
 
+	  	          uint32_t delay_ms = 0;
+
+	  	          switch(gesture) {
+	  	              case GESTURE_1_FINGER: delay_ms = 1000; break;
+	  	              case GESTURE_2_FINGER: delay_ms = 2000; break;
+	  	              case GESTURE_3_FINGER: delay_ms = 3000; break;
+	  	              case GESTURE_4_FINGER: delay_ms = 4000; break;
+	  	              case GESTURE_5_FINGER: delay_ms = 5000; break;
+	  	              default: delay_ms = 0; break;
+	  	          }
+
+	  	          // Handle the LED Logic
+	  	          if (delay_ms > 0) {
+	  	              HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, GPIO_PIN_SET);
+	  	              HAL_Delay(delay_ms);
+	  	              HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, GPIO_PIN_RESET);
+	  	          }
+	  	      }
+
+	  	      // Polling delay
+	  	      HAL_Delay(50);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
