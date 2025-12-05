@@ -1,4 +1,5 @@
 "./Core/Src/main.o"
+"./Core/Src/paj7660.o"
 "./Core/Src/stm32f2xx_hal_msp.o"
 "./Core/Src/stm32f2xx_it.o"
 "./Core/Src/syscalls.o"
