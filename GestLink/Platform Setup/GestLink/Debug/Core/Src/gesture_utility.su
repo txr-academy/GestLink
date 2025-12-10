@@ -1,2 +1,2 @@
 ../Core/Src/gesture_utility.c:21:13:clear_all_leds	16	static
-../Core/Src/gesture_utility.c:31:6:gesture_feedback	72	static
+../Core/Src/gesture_utility.c:31:6:gesture_feedback	24	static

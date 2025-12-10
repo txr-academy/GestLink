@@ -124,12 +124,24 @@ int main(void)
 		  printf("Gesture code: %d\r\n", gesture);
 
 	  switch(gesture){
-		  case GESTURE_1_FINGER: break;
-		  case GESTURE_2_FINGER: break;
-		  case GESTURE_3_FINGER: break;
-		  case GESTURE_4_FINGER: break;
-		  case GESTURE_5_FINGER: break;
-		  default: break;
+		  case GESTURE_1_FINGER:
+			  gesture_feedback(GESTURE_1_FINGER);
+			  break;
+		  case GESTURE_2_FINGER:
+			  gesture_feedback(GESTURE_2_FINGER);
+			  break;
+		  case GESTURE_3_FINGER:
+			  gesture_feedback(GESTURE_3_FINGER);
+			  break;
+		  case GESTURE_4_FINGER:
+			  gesture_feedback(GESTURE_4_FINGER);
+			  break;
+		  case GESTURE_5_FINGER:
+			  gesture_feedback(GESTURE_5_FINGER);
+			  break;
+		  default:
+			  gesture_feedback(31);
+			  break;
 	  	  }
 	  }
 	  HAL_Delay(150);
@@ -138,14 +150,14 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  uint8_t current_gesture_id = read_gesture_id(); // You will implement this later
-
-	      if (current_gesture_id != 0) // Only update feedback if a new gesture is detected
-	      {
-	          gesture_feedback(current_gesture_id);
-	      }
-
-	      HAL_Delay(500);
+//	  uint8_t current_gesture_id = read_gesture_id(); // You will implement this later
+//
+//	      if (current_gesture_id != 0) // Only update feedback if a new gesture is detected
+//	      {
+//	          gesture_feedback(current_gesture_id);
+//	      }
+//
+//	      HAL_Delay(500);
   }
   /* USER CODE END 3 */
 }

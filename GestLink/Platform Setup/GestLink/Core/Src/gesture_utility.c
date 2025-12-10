@@ -44,11 +44,17 @@ void gesture_feedback(uint8_t gesture_id) {
         	HAL_GPIO_WritePin(LED_GPIO_PORT, LED_PINS[i], GPIO_PIN_SET);
         }
 
+        HAL_Delay(500);
+        if(gesture_id == 31){
+        	clear_all_leds();
+        }
+
+
         // Add Debug Print (using the configured huart3 handle)
-        char dbg_buffer[40];
-        int len = snprintf(dbg_buffer, sizeof(dbg_buffer), "[INFO] Feedback: Count %d displayed.\r\n", gesture_id);
-        extern UART_HandleTypeDef huart3; // Access the handle defined in main.c
-        HAL_UART_Transmit(&huart3, (uint8_t*)dbg_buffer, len, HAL_MAX_DELAY);
+//        char dbg_buffer[40];
+//        int len = snprintf(dbg_buffer, sizeof(dbg_buffer), "[INFO] Feedback: Count %d displayed.\r\n", gesture_id);
+//        extern UART_HandleTypeDef huart3; // Access the handle defined in main.c
+//        HAL_UART_Transmit(&huart3, (uint8_t*)dbg_buffer, len, HAL_MAX_DELAY);
 
     } else {
         // Logic for other gestures (Swipe, Grab, Tap) will go here.
