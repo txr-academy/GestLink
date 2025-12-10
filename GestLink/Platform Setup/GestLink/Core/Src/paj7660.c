@@ -7,7 +7,7 @@ static I2C_HandleTypeDef *paj_i2c;
 
 // Write 1 byte to a register
 static void PAJ_Write(uint8_t reg, uint8_t value) {
-    HAL_I2C_Mem_Write(paj_i2c, PAJ7660_ADDR, reg, I2C_MEMADD_SIZE_8BIT, &value, 1, 100);
+	HAL_I2C_Mem_Write(paj_i2c, PAJ7660_ADDR, reg, I2C_MEMADD_SIZE_8BIT, &value, 1, 100);
 }
 
 // Read 1 byte from a register
@@ -27,6 +27,7 @@ static uint8_t PAJ_Read(uint8_t reg) {
 uint8_t PAJ7660_Init(I2C_HandleTypeDef *hi2c) {
     paj_i2c = hi2c;
 
+
     // 0. Wait for power stabilization
     HAL_Delay(30);
 
@@ -34,6 +35,7 @@ uint8_t PAJ7660_Init(I2C_HandleTypeDef *hi2c) {
     // Note: We skip the return check here since we rely on the Status check below,
     // but reading it clears any bus glitches.
     PAJ_Read(PAJ7660_REG_PARTID_L);
+
 
     // 2. Set Operation Mode to Gesture (0x04) [cite: 1430]
     PAJ_Write(PAJ7660_REG_OP_MODE, 0x04);
