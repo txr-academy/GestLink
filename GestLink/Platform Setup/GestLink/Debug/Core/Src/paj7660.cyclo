@@ -1,0 +1,4 @@
+../Core/Src/paj7660.c:9:13:PAJ_Write	1
+../Core/Src/paj7660.c:14:16:PAJ_Read	1
+../Core/Src/paj7660.c:27:9:PAJ7660_Init	2
+../Core/Src/paj7660.c:63:9:PAJ7660_PollGesture	2

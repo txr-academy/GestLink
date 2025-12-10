@@ -18,11 +18,12 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "gesture_utility.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include<stdio.h>
+#include "gesture_utility.h"
+#include "paj7660.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -66,7 +67,10 @@ static void MX_ETH_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+int _write(int file, char *ptr, int len){
+	HAL_UART_Transmit(&huart3, (uint8_t *)ptr, len, 100);
+	return len;
+}
 /* USER CODE END 0 */
 
 /**
@@ -103,17 +107,32 @@ int main(void)
   MX_I2C1_Init();
   MX_ETH_Init();
   /* USER CODE BEGIN 2 */
-
+  if (PAJ7660_Init(&hi2c1)) {
+	  printf("PAJ7660 init success!");
+  }
+  else{
+	  printf("PAJ7660 init failed");
+  }
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	 //HAL_UART_Transmit(&huart3, (uint8_t*)tx_buffer, sizeof(tx_buffer) - 1, HAL_MAX_DELAY);
-	//  HAL_Delay(1000);
-	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_7);
-	  HAL_Delay(1000);
+	  uint8_t gesture = PAJ7660_PollGesture();
+	  if(gesture != GESTURE_NONE){
+		  printf("Gesture code: %d\r\n", gesture);
+
+	  switch(gesture){
+		  case GESTURE_1_FINGER: break;
+		  case GESTURE_2_FINGER: break;
+		  case GESTURE_3_FINGER: break;
+		  case GESTURE_4_FINGER: break;
+		  case GESTURE_5_FINGER: break;
+		  default: break;
+	  	  }
+	  }
+	  HAL_Delay(150);
 
 
     /* USER CODE END WHILE */

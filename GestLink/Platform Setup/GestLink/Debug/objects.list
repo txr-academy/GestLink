@@ -1,5 +1,6 @@
 "./Core/Src/gesture_utility.o"
 "./Core/Src/main.o"
+"./Core/Src/paj7660.o"
 "./Core/Src/read_gesture_id.o"
 "./Core/Src/stm32f2xx_hal_msp.o"
 "./Core/Src/stm32f2xx_it.o"
