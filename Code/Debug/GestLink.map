@@ -476,7 +476,7 @@ Discarded input sections
  .debug_macro   0x00000000      0x11e ./Core/Src/read_gesture_id.o
  .debug_macro   0x00000000       0x10 ./Core/Src/read_gesture_id.o
  .debug_line    0x00000000      0x78d ./Core/Src/read_gesture_id.o
- .debug_str     0x00000000    0xbf6d6 ./Core/Src/read_gesture_id.o
+ .debug_str     0x00000000    0xbf6d5 ./Core/Src/read_gesture_id.o
  .comment       0x00000000       0x44 ./Core/Src/read_gesture_id.o
  .debug_frame   0x00000000       0x38 ./Core/Src/read_gesture_id.o
  .ARM.attributes
@@ -4619,26 +4619,26 @@ LOAD C:/ST/STM32CubeIDE_1.19.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.ext
  .debug_line    0x0000dceb     0x2561 ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_uart.o
  .debug_line    0x0001024c     0x1d64 ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_ll_usb.o
 
-.debug_str      0x00000000    0xc9a41
- .debug_str     0x00000000    0xc9a41 ./Core/Src/gesture_utility.o
-                              0xc2f08 (size before relaxing)
- .debug_str     0x000c9a41    0xc47c7 ./Core/Src/main.o
- .debug_str     0x000c9a41    0xbf901 ./Core/Src/paj7660.o
- .debug_str     0x000c9a41    0xc0709 ./Core/Src/stm32f2xx_hal_msp.o
- .debug_str     0x000c9a41    0xbf72d ./Core/Src/stm32f2xx_it.o
- .debug_str     0x000c9a41     0x99a2 ./Core/Src/syscalls.o
- .debug_str     0x000c9a41     0x7740 ./Core/Src/sysmem.o
- .debug_str     0x000c9a41    0xbf33d ./Core/Src/system_stm32f2xx.o
- .debug_str     0x000c9a41       0x9a ./Core/Startup/startup_stm32f207zgtx.o
- .debug_str     0x000c9a41    0xbfe89 ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal.o
- .debug_str     0x000c9a41    0xbfc80 ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_cortex.o
- .debug_str     0x000c9a41    0xbff7f ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_eth.o
- .debug_str     0x000c9a41    0xbf4fb ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_gpio.o
- .debug_str     0x000c9a41    0xc03af ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_i2c.o
- .debug_str     0x000c9a41    0xbfdfe ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_pcd.o
- .debug_str     0x000c9a41    0xbf7ef ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_rcc.o
- .debug_str     0x000c9a41    0xbfd92 ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_uart.o
- .debug_str     0x000c9a41    0xbfd4a ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_ll_usb.o
+.debug_str      0x00000000    0xc9a96
+ .debug_str     0x00000000    0xc9a96 ./Core/Src/gesture_utility.o
+                              0xc2f07 (size before relaxing)
+ .debug_str     0x000c9a96    0xc47c6 ./Core/Src/main.o
+ .debug_str     0x000c9a96    0xbf900 ./Core/Src/paj7660.o
+ .debug_str     0x000c9a96    0xc0708 ./Core/Src/stm32f2xx_hal_msp.o
+ .debug_str     0x000c9a96    0xbf72c ./Core/Src/stm32f2xx_it.o
+ .debug_str     0x000c9a96     0x99a1 ./Core/Src/syscalls.o
+ .debug_str     0x000c9a96     0x773f ./Core/Src/sysmem.o
+ .debug_str     0x000c9a96    0xbf33c ./Core/Src/system_stm32f2xx.o
+ .debug_str     0x000c9a96       0x9a ./Core/Startup/startup_stm32f207zgtx.o
+ .debug_str     0x000c9a96    0xbfe89 ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal.o
+ .debug_str     0x000c9a96    0xbfc80 ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_cortex.o
+ .debug_str     0x000c9a96    0xbff7f ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_eth.o
+ .debug_str     0x000c9a96    0xbf4fb ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_gpio.o
+ .debug_str     0x000c9a96    0xc03af ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_i2c.o
+ .debug_str     0x000c9a96    0xbfdfe ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_pcd.o
+ .debug_str     0x000c9a96    0xbf7ef ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_rcc.o
+ .debug_str     0x000c9a96    0xbfd92 ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_hal_uart.o
+ .debug_str     0x000c9a96    0xbfd4a ./Drivers/STM32F2xx_HAL_Driver/Src/stm32f2xx_ll_usb.o
 
 .comment        0x00000000       0x43
  .comment       0x00000000       0x43 ./Core/Src/gesture_utility.o
