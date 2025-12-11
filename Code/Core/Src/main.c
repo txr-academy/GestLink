@@ -122,7 +122,7 @@ int main(void)
 	  uint8_t gesture = PAJ7660_PollGesture();
 	  if(gesture != GESTURE_NONE){
 		  printf("Gesture code: %d\r\n", gesture);
-
+		  //HAL_Delay(1000);
 	  switch(gesture){
 		  case GESTURE_1_FINGER:
 			  gesture_feedback(GESTURE_1_FINGER);
@@ -138,6 +138,12 @@ int main(void)
 			  break;
 		  case GESTURE_5_FINGER:
 			  gesture_feedback(GESTURE_5_FINGER);
+			  break;
+		  case GESTURE_LEFT:
+			  gesture_feedback(GESTURE_LEFT);
+			  break;
+		  case GESTURE_RIGHT:
+			  gesture_feedback(GESTURE_RIGHT);
 			  break;
 		  default:
 			  gesture_feedback(31);
