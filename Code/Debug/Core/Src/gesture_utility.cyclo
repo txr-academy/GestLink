@@ -1,4 +1,0 @@
-../Core/Src/gesture_utility.c:24:13:clear_all_leds	2
-../Core/Src/gesture_utility.c:33:13:swipe_left_anim	2
-../Core/Src/gesture_utility.c:46:13:swipe_right_anim	2
-../Core/Src/gesture_utility.c:60:6:gesture_feedback	7

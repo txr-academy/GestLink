@@ -1,5 +1,6 @@
 #include "gesture_utility.h"
 #include<stdio.h>
+#include "main.h"
 
 #define LED_GPIO_PORT GPIOD
 
@@ -14,10 +15,27 @@ const uint16_t LED_PINS[] = {
 };
 
 #define NUM_LEDS 5
+#define CLOCKWISE_ID        6
+#define COUNTER_CLOCKWISE_ID 7
 #define SWIPE_LEFT_ID  8
 #define SWIPE_RIGHT_ID 9
 #define SWIPE_ANIM_DELAY 50 // Animation speed (in milliseconds)
+#define THUMBS_UP_ID   10
+#define THUMBS_DOWN_ID 11
+#define CW_CCW_REPETITIONS 3
 
+const uint16_t RED_PINS[] = {
+		GPIO_PIN_1,
+		GPIO_PIN_3,
+		GPIO_PIN_5
+};
+#define NUM_RED_LEDS 3
+
+const uint16_t YELLOW_PINS[] = {
+		GPIO_PIN_2,
+		GPIO_PIN_4
+};
+#define NUM_YELLOW_LEDS 2
 /**
  * @brief Clears all 5 LEDs (sets them to the OFF state) by iterating through the mixed-port array.
  */
@@ -26,6 +44,17 @@ static void clear_all_leds(void) {
     	HAL_GPIO_WritePin(LED_GPIO_PORT, LED_PINS[i], GPIO_PIN_RESET);
     }
 }
+
+/**
+ * @brief Controls the state of a specific color group.
+ */
+static void control_color_group(const uint16_t* pin_array, int num_pins, GPIO_PinState state) {
+    for (int i = 0; i < num_pins; i++) {
+        HAL_GPIO_WritePin(LED_GPIO_PORT, pin_array[i], state);
+    }
+
+}
+
 
 /**
  * @brief Animates a swipe left (from L5 -> L1).
@@ -66,6 +95,27 @@ void gesture_feedback(uint8_t gesture_id) {
 	    else if (gesture_id == SWIPE_RIGHT_ID){
 	    	swipe_right_anim();
 	   }
+	    else if (gesture_id == THUMBS_UP_ID){
+	    	control_color_group(YELLOW_PINS, NUM_YELLOW_LEDS, GPIO_PIN_SET);
+	    	//HAL_Delay(500);
+	    	//control_color_group(YELLOW_PINS, NUM_YELLOW_LEDS, GPIO_PIN_RESET);
+	    }
+	    else if (gesture_id == THUMBS_DOWN_ID){
+	    	control_color_group(RED_PINS, NUM_RED_LEDS, GPIO_PIN_SET);
+	    	//HAL_Delay(500);
+	    	//control_color_group(RED_PINS, NUM_RED_LEDS, GPIO_PIN_RESET);
+	    }
+	    else if (gesture_id == CLOCKWISE_ID){
+	    	for (int i = 0; i < CW_CCW_REPETITIONS; i++){
+	    		swipe_right_anim();
+	    	}
+	    }
+	    else if (gesture_id == COUNTER_CLOCKWISE_ID){
+	    	for (int i = 0; i < CW_CCW_REPETITIONS; i++){
+	    		swipe_left_anim();
+	    	}
+	    }
+
     // 2. Check for the static count gestures (ID 1 through 5)
 	    else if (gesture_id >= 1 && gesture_id <= NUM_LEDS) {
 
@@ -78,6 +128,7 @@ void gesture_feedback(uint8_t gesture_id) {
         	HAL_GPIO_WritePin(LED_GPIO_PORT, LED_PINS[i], GPIO_PIN_SET);
         }
 	    }
+
      // HAL_Delay(500);
      if(gesture_id == 31){
      clear_all_leds();
