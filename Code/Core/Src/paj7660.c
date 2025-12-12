@@ -82,3 +82,13 @@ uint8_t PAJ7660_PollGesture(void) {
 
     return gesture_code;
 }
+
+void PAJ7660_SetGestureMode(uint8_t mode){
+	PAJ_Write(PAJ7660_REG_GESTURE_MODE, mode);
+}
+
+uint8_t PAJ7660_ReadGestureMode(void){
+	return PAJ_Read(PAJ7660_REG_GESTURE_MODE);
+}
+
+

@@ -24,6 +24,7 @@
 #include<stdio.h>
 #include "gesture_utility.h"
 #include "paj7660.h"
+#include "paj7660_thumb.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -119,38 +120,74 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  uint8_t gesture_mode;
 	  uint8_t gesture = PAJ7660_PollGesture();
-	  if(gesture != GESTURE_NONE){
-		  printf("Gesture code: %d\r\n", gesture);
-		  //HAL_Delay(1000);
-	  switch(gesture){
-		  case GESTURE_1_FINGER:
-			  gesture_feedback(GESTURE_1_FINGER);
-			  break;
-		  case GESTURE_2_FINGER:
-			  gesture_feedback(GESTURE_2_FINGER);
-			  break;
-		  case GESTURE_3_FINGER:
-			  gesture_feedback(GESTURE_3_FINGER);
-			  break;
-		  case GESTURE_4_FINGER:
-			  gesture_feedback(GESTURE_4_FINGER);
-			  break;
-		  case GESTURE_5_FINGER:
-			  gesture_feedback(GESTURE_5_FINGER);
-			  break;
-		  case GESTURE_LEFT:
-			  gesture_feedback(GESTURE_LEFT);
-			  break;
-		  case GESTURE_RIGHT:
-			  gesture_feedback(GESTURE_RIGHT);
-			  break;
-		  default:
-			  gesture_feedback(31);
-			  break;
-	  	  }
+	  gesture_mode = PAJ7660_ReadGestureMode();
+	  if(gesture_mode == MODE_COMBINED){
+		  if(gesture != GESTURE_NONE){
+			  printf("Gesture code: %d\r\n", gesture);
+
+			  switch(gesture){
+				  case GESTURE_1_FINGER:
+					  gesture_feedback(GESTURE_1_FINGER);
+					  break;
+				  case GESTURE_2_FINGER:
+					  gesture_feedback(GESTURE_2_FINGER);
+					  break;
+				  case GESTURE_3_FINGER:
+					  gesture_feedback(GESTURE_3_FINGER);
+					  break;
+				  case GESTURE_4_FINGER:
+					  gesture_feedback(GESTURE_4_FINGER);
+					  break;
+				  case GESTURE_5_FINGER:
+					  gesture_feedback(GESTURE_5_FINGER);
+					  break;
+				  case GESTURE_LEFT:
+					  gesture_feedback(GESTURE_LEFT);
+					  break;
+				  case GESTURE_RIGHT:
+					  gesture_feedback(GESTURE_RIGHT);
+					  break;
+				  case GESTURE_CW:
+					  gesture_feedback(GESTURE_CW);
+					  break;
+				  case GESTURE_CCW:
+					  gesture_feedback(GESTURE_CCW);
+					  break;
+//				  case FINGER_1_PUSH:
+//					  PAJ7660_SetGestureMode(MODE_THUMB);
+//					  break;
+				  default:
+					  gesture_feedback(31);
+					  break;
+			  }
+		  }
 	  }
-	  HAL_Delay(150);
+//	  else if(gesture_mode == MODE_THUMB){
+//		  ThumbState_t thumb = PAJ7660_ReadThumbState(&hi2c1);
+//		  switch (thumb) {
+//		          case THUMB_UP:
+//		              printf("Thumb Status: UP\r\n");
+//		              gesture_feedback(GESTURE_THUMB_UP); // Your custom feedback function
+//		              break;
+//
+//		          case THUMB_DOWN:
+//		              printf("Thumb Status: DOWN\r\n");
+//		              gesture_feedback(GESTURE_THUMB_DOWN);
+//		              break;
+//
+//		          case THUMB_NONE:
+//		              // No thumb detected, keep polling
+//		              break;
+//
+//		          case THUMB_ERROR:
+//		              // Handle I2C error (e.g., reset sensor or blink LED red)
+//		              printf("Sensor Error!\r\n");
+//		              break;
+//		  }
+//	  }
+//	  HAL_Delay(150);
 
 
     /* USER CODE END WHILE */

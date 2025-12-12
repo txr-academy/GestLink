@@ -14,6 +14,12 @@
 #define PAJ7660_REG_CPU_EN      0x0A
 #define PAJ7660_REG_OP_MODE     0x10
 #define PAJ7660_REG_GESTURE     0x57
+#define PAJ7660_REG_GESTURE_MODE 0x22
+
+// --- Gesture Modes (Reg 0x22) ---
+#define MODE_THUMB              0x02
+#define MODE_CURSOR             0x04
+#define MODE_COMBINED           0x05
 
 // --- Gesture Codes (Decoded) ---
 // These match the values returned after shifting (raw >> 3)
@@ -27,10 +33,12 @@
 #define GESTURE_CCW             0x07 // Counter-Clockwise
 #define GESTURE_LEFT            0x08
 #define GESTURE_RIGHT           0x09
-#define GESTURE_WAVE            0x0C // Often "Wave" maps here in Seeed logic
+#define FINGER_1_PUSH           0x13
 
 // --- Function Prototypes ---
 uint8_t PAJ7660_Init(I2C_HandleTypeDef *hi2c);
 uint8_t PAJ7660_PollGesture(void);
+void PAJ7660_SetGestureMode(uint8_t mode);
+uint8_t PAJ7660_ReadGestureMode(void);
 
 #endif
