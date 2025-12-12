@@ -1,6 +1,0 @@
-../Core/Src/paj7660.c:9:13:PAJ_Write	32	static
-../Core/Src/paj7660.c:14:16:PAJ_Read	40	static
-../Core/Src/paj7660.c:27:9:PAJ7660_Init	24	static
-../Core/Src/paj7660.c:63:9:PAJ7660_PollGesture	16	static
-../Core/Src/paj7660.c:86:6:PAJ7660_SetGestureMode	16	static
-../Core/Src/paj7660.c:90:9:PAJ7660_ReadGestureMode	8	static

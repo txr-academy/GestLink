@@ -1,5 +1,0 @@
-../Core/Src/gesture_utility.c:42:13:clear_all_leds	16	static
-../Core/Src/gesture_utility.c:51:13:control_color_group	32	static
-../Core/Src/gesture_utility.c:62:13:swipe_left_anim	16	static
-../Core/Src/gesture_utility.c:75:13:swipe_right_anim	16	static
-../Core/Src/gesture_utility.c:89:6:gesture_feedback	32	static
