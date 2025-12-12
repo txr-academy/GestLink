@@ -36,6 +36,7 @@ const uint16_t YELLOW_PINS[] = {
 		GPIO_PIN_4
 };
 #define NUM_YELLOW_LEDS 2
+
 /**
  * @brief Clears all 5 LEDs (sets them to the OFF state) by iterating through the mixed-port array.
  */
