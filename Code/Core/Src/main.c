@@ -25,7 +25,8 @@
 #include<stdio.h>
 #include "gesture_utility.h"
 #include "paj7660.h"
-#include "paj7660_thumb.h"
+//#include "paj7660_thumb.h"
+#include "tcp_echo_server.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -106,6 +107,7 @@ int main(void)
   MX_I2C1_Init();
   MX_LWIP_Init();
   /* USER CODE BEGIN 2 */
+  TCP_Echo_Init();
   if (PAJ7660_Init(&hi2c1)) {
 	  printf("PAJ7660 init success!");
   }
@@ -118,6 +120,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  MX_LWIP_Process();
 	  uint8_t gesture_mode;
 	  uint8_t gesture = PAJ7660_PollGesture();
 	  gesture_mode = PAJ7660_ReadGestureMode();
