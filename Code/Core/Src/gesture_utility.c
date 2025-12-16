@@ -112,13 +112,13 @@ void gesture_feedback(uint8_t gesture_id) {
 	    	//control_color_group(RED_PINS, NUM_RED_LEDS, GPIO_PIN_RESET);
 	    }
 	    else if (gesture_id == CLOCKWISE_ID){
-	    	//DEBUG_INFO("Feedback: Clockwise rotation (ID 6).");
+	    	DEBUG_LOG(LOG_LEVEL_INFO, "Feedback: Clockwise (ID 6).");
 	    	for (int i = 0; i < CW_CCW_REPETITIONS; i++){
 	    		swipe_right_anim();
 	    	}
 	    }
 	    else if (gesture_id == COUNTER_CLOCKWISE_ID){
-	    	//DEBUG_INFO("Feedback: Counter-Clockwise rotation (ID 7).");
+	    	DEBUG_LOG(LOG_LEVEL_INFO, "Feedback: Counter-Clockwise (ID 6).");
 	    	for (int i = 0; i < CW_CCW_REPETITIONS; i++){
 	    		swipe_left_anim();
 	    	}
@@ -135,7 +135,7 @@ void gesture_feedback(uint8_t gesture_id) {
                     HAL_GPIO_WritePin(LED_GPIO_PORT, LED_PINS[led_idx], GPIO_PIN_SET);
       	    }}
 	    else if (gesture_id == 31) {
-      	        clear_all_leds();
+              clear_all_leds();
       	 }
 	    else {
 

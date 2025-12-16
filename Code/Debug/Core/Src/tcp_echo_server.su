@@ -1,4 +1,0 @@
-../Core/Src/tcp_echo_server.c:25:6:TCP_Echo_Init	16	static
-../Core/Src/tcp_echo_server.c:57:14:tcp_echo_accept	24	static
-../Core/Src/tcp_echo_server.c:70:14:tcp_echo_recv	32	static
-../Core/Src/tcp_echo_server.c:110:13:tcp_echo_error	16	static
