@@ -27,6 +27,7 @@
 #include "paj7660.h"
 //#include "paj7660_thumb.h"
 #include "tcp_echo_server.h"
+#include "debug_macros.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -109,10 +110,10 @@ int main(void)
   /* USER CODE BEGIN 2 */
   TCP_Echo_Init();
   if (PAJ7660_Init(&hi2c1)) {
-	  printf("PAJ7660 init success!");
+	  DEBUG_LOG(LOG_LEVEL_USER, "Gesture Sensor Status: Initialized successfully.");
   }
   else{
-	  printf("PAJ7660 init failed");
+	  DEBUG_LOG(LOG_LEVEL_ERROR, "Gesture Sensor Status: Initialization FAILED.");
   }
   /* USER CODE END 2 */
 
@@ -449,7 +450,17 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+void check_eth_link_status(void){
+	uint32_t phy_reg_val;
+	HAL_ETH_ReadPHYRegister(&heth, LAN8742A_PHY_ADDRESS, &phy_reg_val);
 
+	if (phy_reg_val & 0x0004){
+		DEBUG_LOG(LOG_LEVEL_INFO, "ETH link Status: UP");
+	}
+	else{
+		DEBUG_LOG(LOG_LEVEL_WARN, "ETH link Status: DOWN");
+	}
+}
 /* USER CODE END 4 */
 
 /**

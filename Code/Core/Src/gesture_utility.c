@@ -1,6 +1,7 @@
 #include "gesture_utility.h"
 #include<stdio.h>
 #include "main.h"
+#include "debug_macros.h"
 
 #define LED_GPIO_PORT GPIOD
 
@@ -90,28 +91,34 @@ static void swipe_right_anim(void) {
 void gesture_feedback(uint8_t gesture_id) {
 
 	if (gesture_id == SWIPE_LEFT_ID) {
+		DEBUG_LOG(LOG_LEVEL_INFO, "Feedback: Swipe LEFT (ID 8) displayed.");
 	       swipe_left_anim();
 	    }
 
 	    else if (gesture_id == SWIPE_RIGHT_ID){
+	    	DEBUG_LOG(LOG_LEVEL_INFO, "Feedback: Swipe RIGHT (ID 9) displayed.");
 	    	swipe_right_anim();
 	   }
 	    else if (gesture_id == THUMBS_UP_ID){
+	    	DEBUG_LOG(LOG_LEVEL_USER, "Feedback: Thumbs UP (ID 10).");
 	    	control_color_group(YELLOW_PINS, NUM_YELLOW_LEDS, GPIO_PIN_SET);
 	    	//HAL_Delay(500);
 	    	//control_color_group(YELLOW_PINS, NUM_YELLOW_LEDS, GPIO_PIN_RESET);
 	    }
 	    else if (gesture_id == THUMBS_DOWN_ID){
+	    	DEBUG_LOG(LOG_LEVEL_USER, "Feedback: Thumbs DOWN (ID 11).");
 	    	control_color_group(RED_PINS, NUM_RED_LEDS, GPIO_PIN_SET);
 	    	//HAL_Delay(500);
 	    	//control_color_group(RED_PINS, NUM_RED_LEDS, GPIO_PIN_RESET);
 	    }
 	    else if (gesture_id == CLOCKWISE_ID){
+	    	//DEBUG_INFO("Feedback: Clockwise rotation (ID 6).");
 	    	for (int i = 0; i < CW_CCW_REPETITIONS; i++){
 	    		swipe_right_anim();
 	    	}
 	    }
 	    else if (gesture_id == COUNTER_CLOCKWISE_ID){
+	    	//DEBUG_INFO("Feedback: Counter-Clockwise rotation (ID 7).");
 	    	for (int i = 0; i < CW_CCW_REPETITIONS; i++){
 	    		swipe_left_anim();
 	    	}
@@ -119,22 +126,23 @@ void gesture_feedback(uint8_t gesture_id) {
 
     // 2. Check for the static count gestures (ID 1 through 5)
 	    else if (gesture_id >= 1 && gesture_id <= NUM_LEDS) {
-
+	    	DEBUG_LOG(LOG_LEVEL_INFO, "Feedback: Count %d displayed.", gesture_id);
     	clear_all_leds();
-        int leds_to_light = (int)gesture_id;
+      //  int leds_to_light = (int)gesture_id;
 
         // Loop only up to the required number of LEDs (e.g., if ID=3, loop runs for i=0, 1, 2)
-        for (int i = 0; i < leds_to_light; i++) {
+        for (int led_idx = 0; led_idx < (int)gesture_id; led_idx++) {
+                    HAL_GPIO_WritePin(LED_GPIO_PORT, LED_PINS[led_idx], GPIO_PIN_SET);
+      	    }}
+	    else if (gesture_id == 31) {
+      	        clear_all_leds();
+      	 }
+	    else {
 
-        	HAL_GPIO_WritePin(LED_GPIO_PORT, LED_PINS[i], GPIO_PIN_SET);
-        }
-	    }
-
-     // HAL_Delay(500);
-     if(gesture_id == 31){
-     clear_all_leds();
-     }
-
+      	        DEBUG_LOG(LOG_LEVEL_WARN, "Unhandled Gesture ID: %d received.", gesture_id);
+      	        clear_all_leds();
+      	    }
+      	}
 
 
         // Add Debug Print (using the configured huart3 handle)
@@ -145,4 +153,4 @@ void gesture_feedback(uint8_t gesture_id) {
 
 
 
-}
+

@@ -69,8 +69,8 @@ all: main-build
 main-build: GestLink.elf secondary-outputs
 
 # Tool invocations
-GestLink.elf GestLink.map: $(OBJS) $(USER_OBJS) C:\Users\jyothish.tr\Documents\GitHub\GestLink\Code\STM32F207ZGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "GestLink.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"C:\Users\jyothish.tr\Documents\GitHub\GestLink\Code\STM32F207ZGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="GestLink.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+GestLink.elf GestLink.map: $(OBJS) $(USER_OBJS) C:\Users\anusree.rs\Documents\GitHub\GestLink\Code\STM32F207ZGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "GestLink.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"C:\Users\anusree.rs\Documents\GitHub\GestLink\Code\STM32F207ZGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="GestLink.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
