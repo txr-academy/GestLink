@@ -109,6 +109,7 @@ int main(void)
   MX_LWIP_Init();
   /* USER CODE BEGIN 2 */
 //  TCP_Echo_Init();
+
   HAL_Delay(2000);
   if (PAJ7660_Init(&hi2c1)) {
 	  DEBUG_LOG(LOG_LEVEL_USER, "Gesture Sensor Status: Initialized successfully.");
@@ -126,7 +127,7 @@ int main(void)
 //	  MX_LWIP_Process();
 	  gesture = PAJ7660_PollGesture();
 	  if(gesture != GESTURE_NONE){
-			  printf("Gesture code: %d\r\n", gesture);
+//			  printf("Gesture code: %d\r\n", gesture);
 		  switch(gesture){
 			  case GESTURE_1_FINGER:
 				  gesture_feedback(GESTURE_1_FINGER);
