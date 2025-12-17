@@ -108,62 +108,59 @@ int main(void)
   MX_I2C1_Init();
   MX_LWIP_Init();
   /* USER CODE BEGIN 2 */
-  TCP_Echo_Init();
+//  TCP_Echo_Init();
+  HAL_Delay(2000);
   if (PAJ7660_Init(&hi2c1)) {
 	  DEBUG_LOG(LOG_LEVEL_USER, "Gesture Sensor Status: Initialized successfully.");
   }
   else{
 	  DEBUG_LOG(LOG_LEVEL_ERROR, "Gesture Sensor Status: Initialization FAILED.");
   }
+  volatile uint8_t gesture;
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  MX_LWIP_Process();
-	  uint8_t gesture_mode;
-	  uint8_t gesture = PAJ7660_PollGesture();
-	  gesture_mode = PAJ7660_ReadGestureMode();
-	  if(gesture_mode == MODE_COMBINED){
-		  if(gesture != GESTURE_NONE){
+//	  MX_LWIP_Process();
+	  gesture = PAJ7660_PollGesture();
+	  if(gesture != GESTURE_NONE){
 			  printf("Gesture code: %d\r\n", gesture);
-
-			  switch(gesture){
-				  case GESTURE_1_FINGER:
-					  gesture_feedback(GESTURE_1_FINGER);
-					  break;
-				  case GESTURE_2_FINGER:
-					  gesture_feedback(GESTURE_2_FINGER);
-					  break;
-				  case GESTURE_3_FINGER:
-					  gesture_feedback(GESTURE_3_FINGER);
-					  break;
-				  case GESTURE_4_FINGER:
-					  gesture_feedback(GESTURE_4_FINGER);
-					  break;
-				  case GESTURE_5_FINGER:
-					  gesture_feedback(GESTURE_5_FINGER);
-					  break;
-				  case GESTURE_LEFT:
-					  gesture_feedback(GESTURE_LEFT);
-					  break;
-				  case GESTURE_RIGHT:
-					  gesture_feedback(GESTURE_RIGHT);
-					  break;
-				  case GESTURE_CW:
-					  gesture_feedback(GESTURE_CW);
-					  break;
-				  case GESTURE_CCW:
-					  gesture_feedback(GESTURE_CCW);
-					  break;
+		  switch(gesture){
+			  case GESTURE_1_FINGER:
+				  gesture_feedback(GESTURE_1_FINGER);
+				  break;
+			  case GESTURE_2_FINGER:
+				  gesture_feedback(GESTURE_2_FINGER);
+				  break;
+			  case GESTURE_3_FINGER:
+				  gesture_feedback(GESTURE_3_FINGER);
+				  break;
+			  case GESTURE_4_FINGER:
+				  gesture_feedback(GESTURE_4_FINGER);
+				  break;
+			  case GESTURE_5_FINGER:
+				  gesture_feedback(GESTURE_5_FINGER);
+				  break;
+			  case GESTURE_LEFT:
+				  gesture_feedback(GESTURE_LEFT);
+				  break;
+			  case GESTURE_RIGHT:
+				  gesture_feedback(GESTURE_RIGHT);
+				  break;
+			  case GESTURE_CW:
+				  gesture_feedback(GESTURE_CW);
+				  break;
+			  case GESTURE_CCW:
+				  gesture_feedback(GESTURE_CCW);
+				  break;
 //				  case FINGER_1_PUSH:
 //					  PAJ7660_SetGestureMode(MODE_THUMB);
 //					  break;
-				  default:
-					  gesture_feedback(31);
-					  break;
-			  }
+			  default:
+				  gesture_feedback(31);
+				  break;
 		  }
 	  }
 //	  else if(gesture_mode == MODE_THUMB){

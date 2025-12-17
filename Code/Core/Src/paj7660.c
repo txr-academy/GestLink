@@ -31,6 +31,8 @@ uint8_t PAJ7660_Init(I2C_HandleTypeDef *hi2c) {
     // 0. Wait for power stabilization
     HAL_Delay(30);
 
+    PAJ_Write(0x7F, 0x00);
+
     // 1. Check Connection (Read Part ID) - Optional but good practice
     // Note: We skip the return check here since we rely on the Status check below,
     // but reading it clears any bus glitches.
