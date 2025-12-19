@@ -1,4 +1,5 @@
 #include "PAJ7660.h"
+#include <stdio.h>
 
 // Private variable to hold the I2C handle
 static I2C_HandleTypeDef *paj_i2c;
@@ -33,11 +34,24 @@ uint8_t PAJ7660_Init(I2C_HandleTypeDef *hi2c) {
 
     PAJ_Write(0x7F, 0x00);
 
+
+
     // 1. Check Connection (Read Part ID) - Optional but good practice
     // Note: We skip the return check here since we rely on the Status check below,
     // but reading it clears any bus glitches.
     PAJ_Read(PAJ7660_REG_PARTID_L);
 
+
+	uint8_t current_status = PAJ_Read(PAJ7660_REG_STATUS);
+	printf("%d\r\n", current_status);
+
+	// Check Bit 0 (PowerOn Ready)
+	if (current_status != 0x00) {
+		// It is ALREADY awake! No need to re-initialize.
+		// Just clear any old interrupts and return success.
+		PAJ_Write(PAJ7660_REG_STATUS, 0x00);
+		return 1;
+	}
 
     // 2. Set Operation Mode to Gesture (0x04) [cite: 1430]
     PAJ_Write(PAJ7660_REG_OP_MODE, 0x04);
