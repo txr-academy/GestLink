@@ -110,7 +110,8 @@ int main(void)
   /* USER CODE BEGIN 2 */
 //  TCP_Echo_Init();
 
-  HAL_Delay(2000);
+//  HAL_Delay(2000);
+//  while(PAJ7660_Init(&hi2c1) == 0);
   if (PAJ7660_Init(&hi2c1)) {
 	  DEBUG_LOG(LOG_LEVEL_USER, "Gesture Sensor Status: Initialized successfully.");
   }

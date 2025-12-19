@@ -8,6 +8,7 @@
 #define PAJ7660_ADDR            (0x68 << 1)
 
 // --- Register Addresses ---
+#define PAJ7660_REG_BANK		0x7F
 #define PAJ7660_REG_PARTID_L    0x00
 #define PAJ7660_REG_PARTID_H    0x01
 #define PAJ7660_REG_STATUS      0x04
