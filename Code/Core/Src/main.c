@@ -657,6 +657,7 @@ void StartGestureTask(void *argument)
 
   for(;;) {
     current_gesture = PAJ7660_PollGesture();
+    mb_regs.raw_sensor_data = current_gesture; // Add this to see the value change in Modbus!
 
     if (current_gesture != GESTURE_NONE && current_gesture == last_seen) {
         match_count++;
@@ -711,14 +712,30 @@ void StartFeedbackTask(void *argument)
 void StartModbusTask(void *argument)
 {
   /* USER CODE BEGIN StartModbusTask */
-  /* Infinite loop */
+  uint8_t rx_data[8];
+  uint8_t tx_data[256];
+
   for(;;)
   {
-    osDelay(1);
+	  __HAL_UART_CLEAR_OREFLAG(&huart6);
+	  __HAL_UART_CLEAR_NEFLAG(&huart6);
+	  __HAL_UART_CLEAR_FEFLAG(&huart6);
+    // Receive 8 bytes with a 50ms timeout
+    if (HAL_UART_Receive(&huart6, rx_data, 8, 100) == HAL_OK)
+    {
+    	HAL_GPIO_TogglePin(GPIOB, LD2_Pin);
+      // The function now handles slave_id check and CRC internally
+      uint16_t response_len = Modbus_ProcessRequest(rx_data, tx_data, 8);
+
+      if (response_len > 0)
+      {
+        HAL_UART_Transmit(&huart6, tx_data, response_len, 100);
+      }
+    }
+    osDelay(1); // Small yield for RTOS
   }
   /* USER CODE END StartModbusTask */
 }
-
 /**
   * @brief  Period elapsed callback in non blocking mode
   * @note   This function is called  when TIM1 interrupt took place, inside
