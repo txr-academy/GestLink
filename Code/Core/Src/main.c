@@ -30,6 +30,8 @@
 #include "tcp_echo_server.h"
 #include "debug_macros.h"
 #include "modbus_rtu.h"
+#include "MQTTPacket.h"
+#include "lwip/sockets.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -55,6 +57,9 @@ UART_HandleTypeDef huart3;
 UART_HandleTypeDef huart6;
 
 PCD_HandleTypeDef hpcd_USB_OTG_FS;
+
+/* External variables */
+extern struct netif gnetif;
 
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
@@ -89,6 +94,15 @@ osMessageQueueId_t gestureQueueHandle;
 const osMessageQueueAttr_t gestureQueue_attributes = {
   .name = "gestureQueue"
 };
+
+/* Definitions for mqttTask */
+osThreadId_t mqttTaskHandle;
+const osThreadAttr_t mqttTask_attributes = {
+  .name = "mqttTask",
+  .stack_size = 512 * 4, // MQTT needs a bit more stack for buffers
+  .priority = (osPriority_t) osPriorityNormal,
+};
+
 /* USER CODE BEGIN PV */
 osMessageQueueId_t gestureQueueHandle;
 osThreadId_t FeedbackTaskHandle;
@@ -107,6 +121,7 @@ void StartDefaultTask(void *argument);
 void StartGestureTask(void *argument);
 void StartFeedbackTask(void *argument);
 void StartModbusTask(void *argument);
+void StartMQTTTask(void *argument);
 
 /* USER CODE BEGIN PFP */
 
@@ -202,6 +217,9 @@ int main(void)
 
   /* creation of ModbusTask */
   ModbusTaskHandle = osThreadNew(StartModbusTask, NULL, &ModbusTask_attributes);
+
+  /* Creation of mqttTask */
+  mqttTaskHandle = osThreadNew(StartMQTTTask, NULL, &mqttTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -736,6 +754,47 @@ void StartModbusTask(void *argument)
   }
   /* USER CODE END StartModbusTask */
 }
+
+void StartMQTTTask(void *argument) {
+
+	/* USER CODE BEGIN StartMQTTTask */
+  /* Variables for Paho */
+  unsigned char buf[200];
+  int buflen = sizeof(buf);
+  MQTTPacket_connectData data = MQTTPacket_connectData_initializer;
+  int mysock = -1;
+
+  for(;;) {
+    // 1. Wait for DHCP (Network must be ready)
+    // Check if gnetif has a valid IP address
+    if (gnetif.ip_addr.addr != 0 && mysock < 0) {
+
+      // 2. Open Socket
+      mysock = socket(AF_INET, SOCK_STREAM, 0);
+
+      struct sockaddr_in servaddr;
+      servaddr.sin_family = AF_INET;
+      servaddr.sin_port = htons(1883);
+      servaddr.sin_addr.s_addr = inet_addr("192.168.1.XXX"); // Your PC IP
+
+      // 3. Connect TCP
+      if (connect(mysock, (struct sockaddr*)&servaddr, sizeof(servaddr)) == 0) {
+
+        // 4. Paho: Serialize the Connect Packet
+        data.MQTTVersion = 3;
+        data.clientID.cstring = "STM32_F207_Node";
+        int len = MQTTSerialize_connect(buf, buflen, &data);
+
+        // 5. Send to Broker
+        send(mysock, buf, len, 0);
+      }
+    }
+
+    osDelay(2000); // Check/Retry every 2 seconds
+  }
+  /* USER CODE END StartMQTTTask */
+}
+
 /**
   * @brief  Period elapsed callback in non blocking mode
   * @note   This function is called  when TIM1 interrupt took place, inside
