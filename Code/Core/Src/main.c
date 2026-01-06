@@ -32,6 +32,7 @@
 #include "modbus_rtu.h"
 #include "MQTTPacket.h"
 #include "lwip/sockets.h"
+#include "lwip/netif.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -89,20 +90,18 @@ const osThreadAttr_t ModbusTask_attributes = {
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
+/* Definitions for MQTTTask */
+osThreadId_t MQTTTaskHandle;
+const osThreadAttr_t MQTTTask_attributes = {
+  .name = "MQTTTask",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
 /* Definitions for gestureQueue */
 osMessageQueueId_t gestureQueueHandle;
 const osMessageQueueAttr_t gestureQueue_attributes = {
   .name = "gestureQueue"
 };
-
-/* Definitions for mqttTask */
-osThreadId_t mqttTaskHandle;
-const osThreadAttr_t mqttTask_attributes = {
-  .name = "mqttTask",
-  .stack_size = 512 * 4, // MQTT needs a bit more stack for buffers
-  .priority = (osPriority_t) osPriorityNormal,
-};
-
 /* USER CODE BEGIN PV */
 osMessageQueueId_t gestureQueueHandle;
 osThreadId_t FeedbackTaskHandle;
@@ -218,8 +217,8 @@ int main(void)
   /* creation of ModbusTask */
   ModbusTaskHandle = osThreadNew(StartModbusTask, NULL, &ModbusTask_attributes);
 
-  /* Creation of mqttTask */
-  mqttTaskHandle = osThreadNew(StartMQTTTask, NULL, &mqttTask_attributes);
+  /* creation of MQTTTask */
+  MQTTTaskHandle = osThreadNew(StartMQTTTask, NULL, &MQTTTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -674,6 +673,7 @@ void StartGestureTask(void *argument)
   uint16_t match_count = 0;
 
   for(;;) {
+	osDelay(150);
     current_gesture = PAJ7660_PollGesture();
     mb_regs.raw_sensor_data = current_gesture; // Add this to see the value change in Modbus!
 
@@ -755,19 +755,28 @@ void StartModbusTask(void *argument)
   /* USER CODE END StartModbusTask */
 }
 
-void StartMQTTTask(void *argument) {
-
-	/* USER CODE BEGIN StartMQTTTask */
-  /* Variables for Paho */
+/* USER CODE BEGIN Header_StartMQTTTask */
+/**
+* @brief Function implementing the MQTTTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartMQTTTask */
+void StartMQTTTask(void *argument)
+{
+  /* USER CODE BEGIN StartMQTTTask */
   unsigned char buf[200];
   int buflen = sizeof(buf);
   MQTTPacket_connectData data = MQTTPacket_connectData_initializer;
   int mysock = -1;
 
+  printf("MQTT Task Started...\r\n");
+
   for(;;) {
     // 1. Wait for DHCP (Network must be ready)
-    // Check if gnetif has a valid IP address
     if (gnetif.ip_addr.addr != 0 && mysock < 0) {
+
+      printf("Network Ready. Connecting to HiveMQ...\r\n");
 
       // 2. Open Socket
       mysock = socket(AF_INET, SOCK_STREAM, 0);
@@ -775,18 +784,42 @@ void StartMQTTTask(void *argument) {
       struct sockaddr_in servaddr;
       servaddr.sin_family = AF_INET;
       servaddr.sin_port = htons(1883);
-      servaddr.sin_addr.s_addr = inet_addr("192.168.1.XXX"); // Your PC IP
+      servaddr.sin_addr.s_addr = inet_addr("3.125.105.15"); // HiveMQ Public IP
 
       // 3. Connect TCP
       if (connect(mysock, (struct sockaddr*)&servaddr, sizeof(servaddr)) == 0) {
+        printf("TCP Connected!\r\n");
 
         // 4. Paho: Serialize the Connect Packet
         data.MQTTVersion = 3;
-        data.clientID.cstring = "STM32_F207_Node";
+        data.clientID.cstring = "STM32_F207_Node_Test";
         int len = MQTTSerialize_connect(buf, buflen, &data);
 
-        // 5. Send to Broker
+        // 5. Send Connect Packet to Broker
         send(mysock, buf, len, 0);
+
+        // Brief delay to let the broker acknowledge
+        osDelay(500);
+
+        // 6. NEW: Test Publish Packet
+        char *test_payload = "Gesture System Online";
+        MQTTString topicString = MQTTString_initializer;
+        topicString.cstring = "stm32/gesture/data/gestlink";
+
+        int pub_len = MQTTSerialize_publish(buf, buflen, 0, 0, 0, 0, topicString, (unsigned char*)test_payload, strlen(test_payload));
+
+        if (send(mysock, buf, pub_len, 0) > 0) {
+            printf("MQTT Message Published to HiveMQ!\r\n");
+        }
+
+        // For now, we stay in this loop or close to avoid spamming the public broker
+        // In a real app, you would stay connected. For this test, let's wait.
+        osDelay(10000);
+
+      } else {
+        printf("TCP Connection Failed. Retrying...\r\n");
+        close(mysock);
+        mysock = -1;
       }
     }
 
