@@ -206,7 +206,7 @@ int main(void)
 
   /* Create the thread(s) */
   /* creation of defaultTask */
-  defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
+  //defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
   /* creation of GestureTask */
   GestureTaskHandle = osThreadNew(StartGestureTask, NULL, &GestureTask_attributes);
@@ -215,10 +215,15 @@ int main(void)
   FeedbackTaskHandle = osThreadNew(StartFeedbackTask, NULL, &FeedbackTask_attributes);
 
   /* creation of ModbusTask */
-  ModbusTaskHandle = osThreadNew(StartModbusTask, NULL, &ModbusTask_attributes);
+  //ModbusTaskHandle = osThreadNew(StartModbusTask, NULL, &ModbusTask_attributes);
 
+<<<<<<< Updated upstream
   /* creation of MQTTTask */
   MQTTTaskHandle = osThreadNew(StartMQTTTask, NULL, &MQTTTask_attributes);
+=======
+  /* Creation of mqttTask */
+  //mqttTaskHandle = osThreadNew(StartMQTTTask, NULL, &mqttTask_attributes);
+>>>>>>> Stashed changes
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -669,29 +674,16 @@ void StartGestureTask(void *argument)
 {
   /* USER CODE BEGIN StartGestureTask */
   uint8_t current_gesture;
-  uint8_t last_seen = GESTURE_NONE;
-  uint16_t match_count = 0;
-
   for(;;) {
 	osDelay(150);
     current_gesture = PAJ7660_PollGesture();
-    mb_regs.raw_sensor_data = current_gesture; // Add this to see the value change in Modbus!
 
-    if (current_gesture != GESTURE_NONE && current_gesture == last_seen) {
-        match_count++;
-    } else {
-        match_count = 0;
-        last_seen = current_gesture;
-    }
-
-    // Check against Modbus-configurable threshold
-    if (match_count >= mb_regs.stability_threshold) {
-        mb_regs.last_gesture = current_gesture; // Update Modbus Register
+    // Only send to queue if it's a valid gesture (not 0 and not 31)
+    if (current_gesture != GESTURE_NONE && current_gesture != 31) {
+        printf("Gesture Detected: %d\r\n", current_gesture);
         osMessageQueuePut(gestureQueueHandle, &current_gesture, 0, 0);
-        match_count = 0; // Reset
     }
-
-    osDelay(mb_regs.poll_interval_ms); // Modbus-configurable timing
+    osDelay(150);
   }
   /* USER CODE END StartGestureTask */
 }
@@ -743,7 +735,7 @@ void StartModbusTask(void *argument)
     {
     	HAL_GPIO_TogglePin(GPIOB, LD2_Pin);
       // The function now handles slave_id check and CRC internally
-      uint16_t response_len = Modbus_ProcessRequest(rx_data, tx_data, 8);
+    	uint16_t response_len = Modbus_ProcessRequest(rx_data, tx_data, 8);
 
       if (response_len > 0)
       {
@@ -755,6 +747,7 @@ void StartModbusTask(void *argument)
   /* USER CODE END StartModbusTask */
 }
 
+<<<<<<< Updated upstream
 /* USER CODE BEGIN Header_StartMQTTTask */
 /**
 * @brief Function implementing the MQTTTask thread.
@@ -764,6 +757,9 @@ void StartModbusTask(void *argument)
 /* USER CODE END Header_StartMQTTTask */
 void StartMQTTTask(void *argument)
 {
+=======
+void StartMQTTTask(void *argument) {
+>>>>>>> Stashed changes
   /* USER CODE BEGIN StartMQTTTask */
   unsigned char buf[200];
   int buflen = sizeof(buf);
@@ -784,7 +780,11 @@ void StartMQTTTask(void *argument)
       struct sockaddr_in servaddr;
       servaddr.sin_family = AF_INET;
       servaddr.sin_port = htons(1883);
+<<<<<<< Updated upstream
       servaddr.sin_addr.s_addr = inet_addr("3.125.105.15"); // HiveMQ Public IP
+=======
+      servaddr.sin_addr.s_addr = inet_addr("35.172.255.228"); // HiveMQ Public IP
+>>>>>>> Stashed changes
 
       // 3. Connect TCP
       if (connect(mysock, (struct sockaddr*)&servaddr, sizeof(servaddr)) == 0) {
@@ -827,7 +827,6 @@ void StartMQTTTask(void *argument)
   }
   /* USER CODE END StartMQTTTask */
 }
-
 /**
   * @brief  Period elapsed callback in non blocking mode
   * @note   This function is called  when TIM1 interrupt took place, inside
