@@ -103,8 +103,6 @@ const osMessageQueueAttr_t gestureQueue_attributes = {
   .name = "gestureQueue"
 };
 /* USER CODE BEGIN PV */
-osMessageQueueId_t gestureQueueHandle;
-osThreadId_t FeedbackTaskHandle;
 
 /* USER CODE END PV */
 
@@ -215,15 +213,10 @@ int main(void)
   FeedbackTaskHandle = osThreadNew(StartFeedbackTask, NULL, &FeedbackTask_attributes);
 
   /* creation of ModbusTask */
-  //ModbusTaskHandle = osThreadNew(StartModbusTask, NULL, &ModbusTask_attributes);
+  ModbusTaskHandle = osThreadNew(StartModbusTask, NULL, &ModbusTask_attributes);
 
-<<<<<<< Updated upstream
   /* creation of MQTTTask */
-  MQTTTaskHandle = osThreadNew(StartMQTTTask, NULL, &MQTTTask_attributes);
-=======
-  /* Creation of mqttTask */
-  //mqttTaskHandle = osThreadNew(StartMQTTTask, NULL, &mqttTask_attributes);
->>>>>>> Stashed changes
+//  MQTTTaskHandle = osThreadNew(StartMQTTTask, NULL, &MQTTTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -677,10 +670,12 @@ void StartGestureTask(void *argument)
   for(;;) {
 	osDelay(150);
     current_gesture = PAJ7660_PollGesture();
+    mb_regs.raw_sensor_data = current_gesture;  // Update Modbus register
 
     // Only send to queue if it's a valid gesture (not 0 and not 31)
     if (current_gesture != GESTURE_NONE && current_gesture != 31) {
         printf("Gesture Detected: %d\r\n", current_gesture);
+        mb_regs.last_gesture = current_gesture;  // Update Modbus register
         osMessageQueuePut(gestureQueueHandle, &current_gesture, 0, 0);
     }
     osDelay(150);
@@ -747,7 +742,6 @@ void StartModbusTask(void *argument)
   /* USER CODE END StartModbusTask */
 }
 
-<<<<<<< Updated upstream
 /* USER CODE BEGIN Header_StartMQTTTask */
 /**
 * @brief Function implementing the MQTTTask thread.
@@ -757,9 +751,6 @@ void StartModbusTask(void *argument)
 /* USER CODE END Header_StartMQTTTask */
 void StartMQTTTask(void *argument)
 {
-=======
-void StartMQTTTask(void *argument) {
->>>>>>> Stashed changes
   /* USER CODE BEGIN StartMQTTTask */
   unsigned char buf[200];
   int buflen = sizeof(buf);
@@ -780,11 +771,7 @@ void StartMQTTTask(void *argument) {
       struct sockaddr_in servaddr;
       servaddr.sin_family = AF_INET;
       servaddr.sin_port = htons(1883);
-<<<<<<< Updated upstream
       servaddr.sin_addr.s_addr = inet_addr("3.125.105.15"); // HiveMQ Public IP
-=======
-      servaddr.sin_addr.s_addr = inet_addr("35.172.255.228"); // HiveMQ Public IP
->>>>>>> Stashed changes
 
       // 3. Connect TCP
       if (connect(mysock, (struct sockaddr*)&servaddr, sizeof(servaddr)) == 0) {
