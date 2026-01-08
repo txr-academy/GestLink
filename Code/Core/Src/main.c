@@ -99,6 +99,8 @@ const osThreadAttr_t MQTTTask_attributes = {
 };
 /* Definitions for gestureQueue */
 osMessageQueueId_t gestureQueueHandle;
+osMessageQueueId_t mqttQueueHandle;
+osMessageQueueId_t modbusQueueHandle;
 const osMessageQueueAttr_t gestureQueue_attributes = {
   .name = "gestureQueue"
 };
@@ -677,6 +679,8 @@ void StartGestureTask(void *argument)
         printf("Gesture Detected: %d\r\n", current_gesture);
         mb_regs.last_gesture = current_gesture;  // Update Modbus register
         osMessageQueuePut(gestureQueueHandle, &current_gesture, 0, 0);
+        osMessageQueuePut(mqttQueueHandle, &current_gesture, 0, 0);    // MQTT
+        osMessageQueuePut(modbusQueueHandle, &current_gesture, 0, 0);  // Modbus
     }
     osDelay(150);
   }
@@ -719,9 +723,15 @@ void StartModbusTask(void *argument)
   /* USER CODE BEGIN StartModbusTask */
   uint8_t rx_data[8];
   uint8_t tx_data[256];
+  uint8_t gestureFromQueue;
 
   for(;;)
   {
+	  // IPC: Check for new data from Gesture Task
+	      if (osMessageQueueGet(modbusQueueHandle, &gestureFromQueue, NULL, 0) == osOK) {
+	          mb_regs.last_gesture = gestureFromQueue;
+	          printf("Modbus IPC: Updated Register with Gesture %d\r\n", gestureFromQueue);
+	      }
 	  __HAL_UART_CLEAR_OREFLAG(&huart6);
 	  __HAL_UART_CLEAR_NEFLAG(&huart6);
 	  __HAL_UART_CLEAR_FEFLAG(&huart6);
@@ -737,7 +747,7 @@ void StartModbusTask(void *argument)
         HAL_UART_Transmit(&huart6, tx_data, response_len, 100);
       }
     }
-    osDelay(1); // Small yield for RTOS
+    osDelay(10); // yield for RTOS
   }
   /* USER CODE END StartModbusTask */
 }
