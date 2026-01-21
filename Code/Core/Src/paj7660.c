@@ -39,7 +39,10 @@ uint8_t PAJ7660_Init(I2C_HandleTypeDef *hi2c) {
     // 1. Check Connection (Read Part ID) - Optional but good practice
     // Note: We skip the return check here since we rely on the Status check below,
     // but reading it clears any bus glitches.
-    PAJ_Read(PAJ7660_REG_PARTID_L);
+    uint8_t partid_l = PAJ_Read(PAJ7660_REG_PARTID_L);
+    uint8_t partid_h = PAJ_Read(PAJ7660_REG_PARTID_H);
+
+    printf("Part Id: %x%x\r\n",partid_h,partid_l);
 
 
 	uint8_t current_status = PAJ_Read(PAJ7660_REG_STATUS);

@@ -218,7 +218,7 @@ int main(void)
   ModbusTaskHandle = osThreadNew(StartModbusTask, NULL, &ModbusTask_attributes);
 
   /* creation of MQTTTask */
-//  MQTTTaskHandle = osThreadNew(StartMQTTTask, NULL, &MQTTTask_attributes);
+  MQTTTaskHandle = osThreadNew(StartMQTTTask, NULL, &MQTTTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
