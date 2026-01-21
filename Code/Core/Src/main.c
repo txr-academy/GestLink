@@ -59,14 +59,11 @@ UART_HandleTypeDef huart6;
 
 PCD_HandleTypeDef hpcd_USB_OTG_FS;
 
-/* External variables */
-extern struct netif gnetif;
-
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
   .name = "defaultTask",
-  .stack_size = 128 * 4,
+  .stack_size = 512 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
 /* Definitions for GestureTask */
@@ -94,18 +91,18 @@ const osThreadAttr_t ModbusTask_attributes = {
 osThreadId_t MQTTTaskHandle;
 const osThreadAttr_t MQTTTask_attributes = {
   .name = "MQTTTask",
-  .stack_size = 128 * 4,
+  .stack_size = 512 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
 /* Definitions for gestureQueue */
 osMessageQueueId_t gestureQueueHandle;
-osMessageQueueId_t mqttQueueHandle;
-osMessageQueueId_t modbusQueueHandle;
 const osMessageQueueAttr_t gestureQueue_attributes = {
   .name = "gestureQueue"
 };
 /* USER CODE BEGIN PV */
-
+osMessageQueueId_t modbusQueueHandle;
+osMessageQueueId_t mqttQueueHandle;
+extern struct netif gnetif;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -206,7 +203,7 @@ int main(void)
 
   /* Create the thread(s) */
   /* creation of defaultTask */
-  //defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
+  defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
   /* creation of GestureTask */
   GestureTaskHandle = osThreadNew(StartGestureTask, NULL, &GestureTask_attributes);
@@ -769,6 +766,10 @@ void StartMQTTTask(void *argument)
 
   printf("MQTT Task Started...\r\n");
 
+  while (gnetif.flags == 0) {
+  osDelay(100);  // Wait until LwIP initializes the netif
+  }
+
   for(;;) {
     // 1. Wait for DHCP (Network must be ready)
     if (gnetif.ip_addr.addr != 0 && mysock < 0) {
@@ -781,7 +782,7 @@ void StartMQTTTask(void *argument)
       struct sockaddr_in servaddr;
       servaddr.sin_family = AF_INET;
       servaddr.sin_port = htons(1883);
-      servaddr.sin_addr.s_addr = inet_addr("3.125.105.15"); // HiveMQ Public IP
+      servaddr.sin_addr.s_addr = inet_addr("34.243.217.54"); // HiveMQ Public IP
 
       // 3. Connect TCP
       if (connect(mysock, (struct sockaddr*)&servaddr, sizeof(servaddr)) == 0) {
@@ -824,6 +825,7 @@ void StartMQTTTask(void *argument)
   }
   /* USER CODE END StartMQTTTask */
 }
+
 /**
   * @brief  Period elapsed callback in non blocking mode
   * @note   This function is called  when TIM1 interrupt took place, inside

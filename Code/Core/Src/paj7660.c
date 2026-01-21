@@ -34,8 +34,11 @@ uint8_t PAJ7660_Init(I2C_HandleTypeDef *hi2c) {
 
     PAJ_Write(0x7F, 0x00);
 
-
-
+//    PAJ_Write(0x67, 0x8A);
+//    uint8_t led_always_on_register= PAJ_Read(0x67);
+//    printf("LED Always On: %x\r\n", led_always_on_register);
+    PAJ_Write(0x69, 0x90);
+    PAJ_Write(0x6A, 0x90);
     // 1. Check Connection (Read Part ID) - Optional but good practice
     // Note: We skip the return check here since we rely on the Status check below,
     // but reading it clears any bus glitches.
