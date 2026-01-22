@@ -1,0 +1,222 @@
+/* --- Root Variables --- */
+:root {
+    --bg: #0a0c10;
+    --card: #12151c;
+    --accent: #22d3ee;
+    --text: #f8fafc;
+    --muted: #64748b;
+    --mqtt-tag: #06b6d4;
+    --modbus-tag: #f59e0b;
+    --error: #ef4444;
+}
+
+/* --- Global Styles --- */
+body {
+    margin: 0;
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    overflow-x: hidden;
+    padding: 20px;
+}
+
+.dashboard {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* --- Header Section --- */
+.glass-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+    border-bottom: 1px solid #ffffff10;
+    margin-bottom: 30px;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo-icon { 
+    background: var(--accent);
+    color: var(--bg);
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+.logo-text {
+    font-weight: 800;
+    font-size: 1.2rem;
+}
+
+/* --- Connection Button Logic --- */
+#auth-btn {
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 1px solid var(--accent);
+    background: transparent;
+    color: var(--accent);
+}
+
+#auth-btn:hover {
+    background: var(--accent);
+    color: var(--bg);
+    box-shadow: 0 0 15px rgba(34, 211, 238, 0.3);
+}
+
+/* Red state for Disconnect */
+#auth-btn.btn-disconnect {
+    border-color: var(--error);
+    color: var(--error);
+}
+
+#auth-btn.btn-disconnect:hover {
+    background: var(--error);
+    color: white;
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
+}
+
+/* --- Hero Section (Gesture Display) --- */
+.card {
+    background: var(--card);
+    border-radius: 16px;
+    border: 1px solid #ffffff05;
+    padding: 24px;
+    margin-bottom: 24px;
+}
+
+.main-gesture-card {
+    text-align: center;
+    background: linear-gradient(180deg, #12151c 0%, #0a0c10 100%);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+}
+
+.label {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: 2px;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+}
+
+.gesture-visual {
+    padding: 40px 0;
+}
+
+#gesture-icon {
+    font-size: 4rem;
+    margin-bottom: 10px;
+    display: block;
+}
+
+#gesture-name {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--accent);
+    margin: 0;
+    letter-spacing: -1px;
+}
+
+/* --- Confidence Bar --- */
+.confidence-container {
+    max-width: 400px;
+    margin: 20px auto;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 0.8rem;
+    color: var(--muted);
+}
+
+.progress-bar {
+    flex: 1;
+    height: 6px;
+    background: #ffffff10;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+#conf-bar {
+    height: 100%;
+    background: var(--accent);
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 15px var(--accent);
+}
+
+/* --- Event Log Section --- */
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.text-btn {
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-size: 0.7rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.text-btn:hover {
+    opacity: 0.7;
+}
+
+.log-viewport {
+    height: 300px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+/* Custom Scrollbar */
+.log-viewport::-webkit-scrollbar { width: 4px; }
+.log-viewport::-webkit-scrollbar-thumb { background: #ffffff10; border-radius: 10px; }
+
+#event-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.log-item { 
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: #ffffff03;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ffffff05;
+}
+
+.tag {
+    font-size: 0.6rem;
+    font-weight: 800;
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin-right: 12px;
+    text-transform: uppercase;
+}
+
+.tag-mqtt { background: rgba(6, 182, 212, 0.15); color: var(--mqtt-tag); }
+.tag-modbus { background: rgba(245, 158, 11, 0.15); color: var(--modbus-tag); }
+
+.log-time {
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+}

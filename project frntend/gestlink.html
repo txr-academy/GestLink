@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GestLink | Pro Terminal</title>
+    <link rel="stylesheet" href="gestlink.css">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"></script>
+</head>
+<body>
+    <div class="dashboard">
+        <header class="glass-header">
+            <div class="brand">
+                <div class="logo-icon">⚡</div>
+                <div class="logo-text">GestLink</div>
+            </div>
+            <div class="system-status">
+                <button id="auth-btn" class="btn-connect" onclick="toggleConnection()">CONNECT</button>
+            </div>
+        </header>
+
+        <section class="hero-section">
+            <div class="card main-gesture-card">
+                <p class="label">CURRENT GESTURE</p>
+                <div class="gesture-visual">
+                    <h1 id="gesture-name">Awaiting data...</h1>
+                </div>
+            </div>
+        </section>
+
+        <div class="card log-card">
+            <div class="card-header">
+                <p class="label">EVENT LOG</p>
+                <button class="text-btn" onclick="clearLog()">CLEAR ALL</button>
+            </div>
+            <div class="log-viewport">
+                <ul id="event-list"></ul>
+            </div>
+        </div>
+    </div>
+    <script src="gestlink.js"></script>
+</body>
+</html>
