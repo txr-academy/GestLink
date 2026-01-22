@@ -30,7 +30,7 @@
 #include "tcp_echo_server.h"
 #include "debug_macros.h"
 #include "modbus_rtu.h"
-#include "MQTTPacket.h"
+#include "mqtt_transport.h"
 #include "lwip/sockets.h"
 #include "lwip/netif.h"
 /* USER CODE END Includes */
@@ -199,6 +199,8 @@ int main(void)
 
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
+  mqttQueueHandle = osMessageQueueNew(10, sizeof(uint8_t), NULL);
+  modbusQueueHandle = osMessageQueueNew(10, sizeof(uint8_t), NULL);
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
@@ -212,7 +214,7 @@ int main(void)
   FeedbackTaskHandle = osThreadNew(StartFeedbackTask, NULL, &FeedbackTask_attributes);
 
   /* creation of ModbusTask */
-  ModbusTaskHandle = osThreadNew(StartModbusTask, NULL, &ModbusTask_attributes);
+//  ModbusTaskHandle = osThreadNew(StartModbusTask, NULL, &ModbusTask_attributes);
 
   /* creation of MQTTTask */
   MQTTTaskHandle = osThreadNew(StartMQTTTask, NULL, &MQTTTask_attributes);
@@ -759,69 +761,60 @@ void StartModbusTask(void *argument)
 void StartMQTTTask(void *argument)
 {
   /* USER CODE BEGIN StartMQTTTask */
-  unsigned char buf[200];
-  int buflen = sizeof(buf);
-  MQTTPacket_connectData data = MQTTPacket_connectData_initializer;
-  int mysock = -1;
+  uint8_t gesture_id;
+  uint32_t keepalive_timer = 0;
 
-  printf("MQTT Task Started...\r\n");
+  printf("[MQTT] Task Started. Waiting for network...\r\n");
 
-  while (gnetif.flags == 0) {
-  osDelay(100);  // Wait until LwIP initializes the netif
+  /* Wait for LwIP to initialize */
+  while (!netif_is_up(&gnetif)) {
+    osDelay(100);
   }
+  printf("[MQTT] LwIP netif is UP.\r\n");
+
+  /* Wait for link */
+  while (!netif_is_link_up(&gnetif)) {
+    osDelay(100);
+  }
+  printf("[MQTT] Ethernet link is UP.\r\n");
 
   for(;;) {
-    // 1. Wait for DHCP (Network must be ready)
-    if (gnetif.ip_addr.addr != 0 && mysock < 0) {
+    /* Wait for valid IP (DHCP) */
+    if (gnetif.ip_addr.addr == 0) {
+      printf("[MQTT] Waiting for DHCP...\r\n");
+      osDelay(1000);
+      continue;
+    }
 
-      printf("Network Ready. Connecting to HiveMQ...\r\n");
+    /* Connect to broker if not connected */
+    if (!gestlink_mqtt_is_connected()) {
+      printf("[MQTT] IP: %lu.%lu.%lu.%lu\r\n",
+             (gnetif.ip_addr.addr) & 0xFF,
+             (gnetif.ip_addr.addr >> 8) & 0xFF,
+             (gnetif.ip_addr.addr >> 16) & 0xFF,
+             (gnetif.ip_addr.addr >> 24) & 0xFF);
 
-      // 2. Open Socket
-      mysock = socket(AF_INET, SOCK_STREAM, 0);
+      if (gestlink_mqtt_connect() != MQTT_OK) {
+        osDelay(5000);  /* Wait before retry */
+        continue;
+      }
+      keepalive_timer = 0;
+    }
 
-      struct sockaddr_in servaddr;
-      servaddr.sin_family = AF_INET;
-      servaddr.sin_port = htons(1883);
-      servaddr.sin_addr.s_addr = inet_addr("34.243.217.54"); // HiveMQ Public IP
-
-      // 3. Connect TCP
-      if (connect(mysock, (struct sockaddr*)&servaddr, sizeof(servaddr)) == 0) {
-        printf("TCP Connected!\r\n");
-
-        // 4. Paho: Serialize the Connect Packet
-        data.MQTTVersion = 3;
-        data.clientID.cstring = "STM32_F207_Node_Test";
-        int len = MQTTSerialize_connect(buf, buflen, &data);
-
-        // 5. Send Connect Packet to Broker
-        send(mysock, buf, len, 0);
-
-        // Brief delay to let the broker acknowledge
-        osDelay(500);
-
-        // 6. NEW: Test Publish Packet
-        char *test_payload = "Gesture System Online";
-        MQTTString topicString = MQTTString_initializer;
-        topicString.cstring = "stm32/gesture/data/gestlink";
-
-        int pub_len = MQTTSerialize_publish(buf, buflen, 0, 0, 0, 0, topicString, (unsigned char*)test_payload, strlen(test_payload));
-
-        if (send(mysock, buf, pub_len, 0) > 0) {
-            printf("MQTT Message Published to HiveMQ!\r\n");
-        }
-
-        // For now, we stay in this loop or close to avoid spamming the public broker
-        // In a real app, you would stay connected. For this test, let's wait.
-        osDelay(10000);
-
-      } else {
-        printf("TCP Connection Failed. Retrying...\r\n");
-        close(mysock);
-        mysock = -1;
+    /* Check for gesture from queue (100ms timeout) */
+    if (osMessageQueueGet(mqttQueueHandle, &gesture_id, NULL, 100) == osOK) {
+      if (gestlink_mqtt_publish_gesture(gesture_id) != MQTT_OK) {
+        /* Publish failed, will reconnect on next iteration */
+        continue;
       }
     }
 
-    osDelay(2000); // Check/Retry every 2 seconds
+    /* Send keepalive every 30 seconds */
+    keepalive_timer += 100;
+    if (keepalive_timer >= 30000) {
+      gestlink_mqtt_send_keepalive();
+      keepalive_timer = 0;
+    }
   }
   /* USER CODE END StartMQTTTask */
 }
